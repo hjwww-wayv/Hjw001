@@ -51,7 +51,7 @@ public class Student {
     }
 
     // 如果你想要打印的时候输出属性内容，不是地址，还可以重写toString
-    @Override
+        @Override
     public String toString() {
         return "Student{" +
                 "name='" + name + '\'' +

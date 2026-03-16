@@ -14,15 +14,15 @@ public class HashMap1 {
         map.put(new Student("wangwu", 20, 1.83), "三班");
         System.out.println(map);
 
-        //1.通过先获取所有键再找值
-        Set<Student> set = map.keySet();
-        System.out.println(set);
-        for (Student s : set) {
-            System.out.println(s + "-->" + map.get(s));
-        }
-        //2.键值对
-        //3.lamba表达式
-        map.forEach((k, v) -> {
-            System.out.println(k + "-->" + v);
-        });
+//        //1.通过先获取所有键再找值
+//        Set<Student> set = map.keySet();
+//        System.out.println(set);
+//        for (Student s : set) {
+//            System.out.println(s + "-->" + map.get(s));
+//        }
+//        //2.键值对
+//        //3.lamba表达式
+//        map.forEach((k, v) -> {
+//            System.out.println(k + "-->" + v);
+//        });
     }}
