@@ -6,5 +6,6 @@ public class UserTest {
         UserService userService = new UserServiceImpl();
 
         userService.register(new User("zhangsan", "18552456", 20));
+
     }
 }
