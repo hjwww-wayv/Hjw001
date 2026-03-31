@@ -1,0 +1,4 @@
+aaaaaaaaaaaaaaaaaaaaaaaaaavvaaaaaaaaa
+aavvaaa第一行内容：今天天气不错
+第二行内容：学习JavaIO
+第三行内容：按行读写很方便
