@@ -1,4 +1,6 @@
-package day13Test; // 放到你新建的dao包下
+package day14Test; // 放到你新建的dao包下
+
+
 
 
 import java.util.List;
@@ -13,5 +15,6 @@ public interface UserDao {
     // 根据id删除用户
     void deleteUser(Integer id);
     void setUser(User user);
-    public List<User> findAdultUsers();
-}
+    List<User> findAdultUsers();
+    List<User> findbypage(Integer pageNum, Integer pageSize) ;
+    }

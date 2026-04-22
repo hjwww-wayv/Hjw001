@@ -1,8 +1,7 @@
-package day13Test;
+package day14Test;
+
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class UserDaoImpl implements UserDao {
 
     // 1. 新增用户：对应注册
     public void addUser(User user) {
-        String sql = "INSERT INTO [user](username, password, birthday) VALUES(?,?,?) ORDER BY create_time DESC";
+        String sql = "INSERT INTO [user](username, password, birthday) VALUES(?,?,?) ";
         // try-with-resources自动关连接
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -67,7 +66,6 @@ public class UserDaoImpl implements UserDao {
                 user.setCreateTime(rs.getTimestamp("create_time").toLocalDateTime());
                 return user;
             }
-            System.out.println("用户不存在");
             return null; // 没查到返回null
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -78,7 +76,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> findAll() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT * FROM [user] ORDER BY id ORDER BY create_time DESC";
+        String sql = "SELECT * FROM [user] ";
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -101,6 +99,7 @@ public class UserDaoImpl implements UserDao {
     // 正确：数据库直接帮你筛，只返回符合条件的，不用查全表
     public List<User> findAdultUsers() {
         // WHERE加筛选条件，数据库只返回符合条件的行
+        // 直接在WHERE里计算，不用别名，不会报错
         String sql = "SELECT * FROM [user] WHERE DATEDIFF(YEAR, birthday, GETDATE()) >= 18 ORDER BY create_time DESC";
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -139,7 +138,7 @@ public class UserDaoImpl implements UserDao {
     // 放在UserDaoSqlServerImpl类里，其他代码都不变，只加这个方法
     public void setUser(User user) {
         // SQL：根据id修改用户名、密码、生日，id是主键，用来定位用户
-        String sql = "UPDATE [user] SET username=?, password=?, birthday=? WHERE id=?";
+        String sql = "UPDATE [user] SET username=?, password=?, birthday=? WHERE id=? ORDER BY create_time DESC";
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -154,4 +153,35 @@ public class UserDaoImpl implements UserDao {
             throw new RuntimeException(e);
         }
     }
-}
+    public List<User> findbypage(Integer pageNum, Integer pageSize) {
+        // 1. 先算跳过的行数
+        int offset = (pageNum - 1) * pageSize;
+        // 2. 拼接完整的SQL，这里你之前拼错了，改好
+        String sql = "SELECT * FROM [user] " +
+                "ORDER BY create_time DESC " + // 必须加排序，不然分页错
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        // 正常JDBC流程
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // 👇 重点！这里必须给两个?赋值，你漏了！
+            pstmt.setInt(1, offset);
+            pstmt.setInt(2, pageSize);
+
+            ResultSet rs = pstmt.executeQuery();
+            List<User> pageList = new ArrayList<>();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setBirthday(rs.getDate("birthday").toLocalDate());
+                user.setCreateTime(rs.getTimestamp("create_time").toLocalDateTime());
+                pageList.add(user);
+            }
+            return pageList;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }}
