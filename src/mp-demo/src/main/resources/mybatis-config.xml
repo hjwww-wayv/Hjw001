@@ -21,7 +21,7 @@
     </environments>
     <mappers>
         <package name="com.example.mapper"/>
-        <package name="day15Test.mapper"/>
+        <package name="day16Test.Mapper"/>
     </mappers>
 
 </configuration>

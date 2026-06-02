@@ -1,6 +1,8 @@
 package day15Test.service;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import day15Test.entity.User;
 
 public interface Userservice {
